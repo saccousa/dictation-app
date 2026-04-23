@@ -280,6 +280,38 @@
         .action-buttons .btn {
             flex: 1;
         }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .full-card {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--ios-bg);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .full-card.active {
+            display: flex;
+        }
+
+        .full-card-content {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
     </style>
 </head>
 <body>
@@ -329,34 +361,41 @@
         </div>
 
         <!-- 听写中页面 -->
-        <div class="page" id="playing-page">
-            <div class="card playing-card">
-                <div class="current-word" id="currentWord">准备开始</div>
-                <div class="progress" id="progress">共 0 个词语</div>
-                <button class="btn btn-primary btn-block" onclick="repeatCurrentWord()" id="repeatBtn">
-                    再读一遍
-                </button>
-                <button class="btn btn-secondary btn-block" onclick="nextWord()" style="margin-top: 12px;">
-                    下一个
-                </button>
-                <button class="btn btn-danger btn-block" onclick="stopDictation()" style="margin-top: 12px;">
-                    结束听写
-                </button>
-                <div class="countdown-bar" id="countdownBar" style="display: none;">
-                    <div class="countdown-fill" id="countdownFill"></div>
+        <div class="full-card" id="playing-page">
+            <div class="full-card-content">
+                <div class="card playing-card">
+                    <div class="current-word" id="currentWord">准备开始</div>
+                    <div class="progress" id="progress">共 0 个词语</div>
+                    <button class="btn btn-primary btn-block" onclick="repeatCurrentWord()" id="repeatBtn">
+                        再读一遍
+                    </button>
+                    <button class="btn btn-secondary btn-block" onclick="nextWord()" style="margin-top: 12px;">
+                        下一个
+                    </button>
+                    <button class="btn btn-danger btn-block" onclick="stopDictation()" style="margin-top: 12px;">
+                        结束听写
+                    </button>
+                    <div class="countdown-bar" id="countdownBar" style="display: none;">
+                        <div class="countdown-fill" id="countdownFill"></div>
+                    </div>
                 </div>
+                <button class="btn btn-secondary" onclick="stopDictation()" style="margin-top: 20px;">
+                    返回
+                </button>
             </div>
         </div>
 
         <!-- 完成页面 -->
-        <div class="page" id="complete-page">
-            <div class="card playing-card">
-                <div style="font-size: 80px; margin-bottom: 16px;">🎉</div>
-                <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--ios-text);">听写完成</h2>
-                <p style="color: var(--ios-label); font-size: 17px; margin-bottom: 24px;" id="completeStats"></p>
-                <button class="btn btn-primary btn-large btn-block" onclick="showPage('setup')">
-                    再来一次
-                </button>
+        <div class="full-card" id="complete-page">
+            <div class="full-card-content">
+                <div class="card playing-card">
+                    <div style="font-size: 80px; margin-bottom: 16px;">🎉</div>
+                    <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--ios-text);">听写完成</h2>
+                    <p style="color: var(--ios-label); font-size: 17px; margin-bottom: 24px;" id="completeStats"></p>
+                    <button class="btn btn-primary btn-large btn-block" onclick="showPage('setup')">
+                        再来一次
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -382,11 +421,18 @@
 
         // 导航
         function showPage(pageName) {
+            // 隐藏所有 full-card
+            document.querySelectorAll('.full-card').forEach(p => p.classList.remove('active'));
+            // 隐藏所有 page
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageName + '-page').classList.add('active');
 
             if (pageName === 'setup') {
+                document.getElementById('setup-page').classList.add('active');
                 state.isPlaying = false;
+            } else if (pageName === 'playing') {
+                document.getElementById('playing-page').classList.add('active');
+            } else if (pageName === 'complete') {
+                document.getElementById('complete-page').classList.add('active');
             }
         }
 
