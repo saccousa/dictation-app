@@ -17,7 +17,6 @@
             --ios-card-bg: #FFFFFF;
             --ios-bg: #F2F2F7;
             --ios-text: #000000;
-            --ios-secondary-text: #3C3C43;
         }
 
         * {
@@ -71,7 +70,7 @@
 
         textarea {
             width: 100%;
-            height: 120px;
+            height: 150px;
             border: none;
             border-radius: 10px;
             padding: 14px;
@@ -118,16 +117,6 @@
         .btn-secondary {
             background: var(--ios-light-gray);
             color: var(--ios-blue);
-        }
-
-        .btn-success {
-            background: var(--ios-green);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--ios-orange);
-            color: white;
         }
 
         .btn-danger {
@@ -183,10 +172,6 @@
             background: var(--ios-blue);
             border-color: var(--ios-blue);
             color: white;
-        }
-
-        .hidden-file-input {
-            display: none;
         }
 
         .preview-tags {
@@ -255,82 +240,11 @@
             transition: width 0.3s linear;
         }
 
-        .wrong-words-list {
-            max-height: 350px;
-            overflow-y: auto;
-        }
-
-        .wrong-word-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 0.5px solid var(--ios-separator);
-        }
-
-        .wrong-word-item:last-child {
-            border-bottom: none;
-        }
-
-        .wrong-word-text {
-            font-size: 17px;
-            color: var(--ios-text);
-            font-weight: 500;
-        }
-
-        .wrong-word-date {
-            font-size: 13px;
-            color: var(--ios-label);
-            margin-top: 4px;
-        }
-
         .empty-state {
             text-align: center;
             padding: 48px 24px;
             color: var(--ios-gray);
             font-size: 15px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            background: rgba(118, 118, 128, 0.12);
-            border-radius: 10px;
-            padding: 3px;
-        }
-
-        .nav-tab {
-            flex: 1;
-            text-align: center;
-            padding: 8px 12px;
-            color: var(--ios-label);
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .nav-tab.active {
-            background: white;
-            color: var(--ios-text);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .camera-preview {
-            width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            border-radius: 10px;
-            margin-bottom: 12px;
         }
 
         .toast {
@@ -366,77 +280,11 @@
         .action-buttons .btn {
             flex: 1;
         }
-
-        .photo-preview {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-top: 12px;
-        }
-
-        .word-list-item {
-            padding: 16px 0;
-            border-bottom: 0.5px solid var(--ios-separator);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .word-list-item:last-child {
-            border-bottom: none;
-        }
-
-        .separator {
-            height: 0.5px;
-            background: var(--ios-separator);
-            margin: 0 20px;
-        }
-
-        /* Large title style */
-        .large-title {
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: 0.37px;
-            padding-bottom: 8px;
-        }
-
-        /* iOS list style */
-        .ios-list {
-            background: var(--ios-card-bg);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        .ios-list-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            background: var(--ios-card-bg);
-        }
-
-        .ios-list-item:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 20px;
-            right: 0;
-            height: 0.5px;
-            background: var(--ios-separator);
-        }
-
-        .ios-list-item-content {
-            position: relative;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="large-title">听写小助手</h1>
-
-        <div class="nav-tabs">
-            <div class="nav-tab active" data-page="setup">准备听写</div>
-            <div class="nav-tab" data-page="wrong-words">错词本</div>
-        </div>
 
         <!-- 准备页面 -->
         <div class="page active" id="setup-page">
@@ -445,14 +293,10 @@
                 <div class="card-content">
                     <textarea id="wordsInput" placeholder="请输入词语，用空格、逗号或换行分隔"></textarea>
                     <div class="action-buttons">
-                        <button class="btn btn-secondary" onclick="document.getElementById('photoInput').click()">
-                            拍照导入
-                        </button>
                         <button class="btn btn-secondary" onclick="parseWords()">
                             确认输入
                         </button>
                     </div>
-                    <input type="file" id="photoInput" class="hidden-file-input" accept="image/*" capture="camera" onchange="handlePhotoUpload(event, 'words')">
                     <div class="preview-tags" id="wordsPreview"></div>
                 </div>
             </div>
@@ -502,44 +346,6 @@
                     <div class="countdown-fill" id="countdownFill"></div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-title">标记错误</div>
-                <div class="card-content">
-                    <p style="color: var(--ios-label); font-size: 15px; margin-bottom: 12px;">
-                        当前词语：<span id="markWord" style="color: var(--ios-blue); font-weight: 600;"></span>
-                    </p>
-                    <button class="btn btn-warning btn-block" onclick="markAsWrong()">
-                        这个词写错了
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 错词本页面 -->
-        <div class="page" id="wrong-words-page">
-            <div class="card">
-                <div class="card-title">拍照检查</div>
-                <div class="card-content">
-                    <button class="btn btn-secondary btn-block" onclick="document.getElementById('wrongWordsPhotoInput').click()">
-                        拍摄订正内容
-                    </button>
-                    <input type="file" id="wrongWordsPhotoInput" class="hidden-file-input" accept="image/*" capture="camera" onchange="handlePhotoUpload(event, 'check')">
-                    <div id="checkPhotoPreview"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">错词记录</div>
-                <div class="card-content">
-                    <div class="wrong-words-list" id="wrongWordsList">
-                        <div class="empty-state">还没有错词记录</div>
-                    </div>
-                    <button class="btn btn-danger btn-block" onclick="clearWrongWords()" style="width: 100%; margin-top: 16px;" id="clearWrongBtn" disabled>
-                        清空错词本
-                    </button>
-                </div>
-            </div>
         </div>
 
         <!-- 完成页面 -->
@@ -565,37 +371,19 @@
             currentRepeat: 0,
             interval: 10,
             repeat: 1,
-            wrongWords: JSON.parse(localStorage.getItem('wrongWords') || '[]'),
             isPlaying: false,
-            countdownTimer: null,
-            checkPhotos: []
+            countdownTimer: null
         };
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             initSettings();
-            renderWrongWords();
-            initNavigation();
         });
 
         // 导航
-        function initNavigation() {
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const page = tab.dataset.page;
-                    showPage(page);
-                });
-            });
-        }
-
         function showPage(pageName) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-
             document.getElementById(pageName + '-page').classList.add('active');
-
-            const tab = document.querySelector(`[data-page="${pageName}"]`);
-            if (tab) tab.classList.add('active');
 
             if (pageName === 'setup') {
                 state.isPlaying = false;
@@ -617,41 +405,9 @@
             });
         }
 
-        // 拍照上传处理
-        function handlePhotoUpload(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (type === 'words') {
-                    // 这里可以集成 OCR 识别，目前仅显示预览
-                    showToast('照片已选择，请手动输入识别出的词语（后续可集成 OCR）');
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'camera-preview';
-                    document.getElementById('wordsPreview').innerHTML = '';
-                    document.getElementById('wordsPreview').appendChild(img);
-                } else if (type === 'check') {
-                    state.checkPhotos.push(e.target.result);
-                    renderCheckPhotos();
-                    showToast('照片已保存');
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function renderCheckPhotos() {
-            const container = document.getElementById('checkPhotoPreview');
-            container.innerHTML = state.checkPhotos.map(src =>
-                `<img src="${src}" class="photo-preview">`
-            ).join('');
-        }
-
         // 解析词语
         function parseWords() {
             const input = document.getElementById('wordsInput').value;
-            // 支持空格、逗号、顿号、换行分隔
             const words = input.replace(/,/g, ',').replace(/\u3001/g, ',').split(/[,\n\r\s]+/).filter(w => w.trim());
 
             if (words.length === 0) {
@@ -659,7 +415,7 @@
                 return;
             }
 
-            state.words = [...new Set(words)]; // 去重
+            state.words = [...new Set(words)];
             renderPreview();
             showToast(`已解析 ${state.words.length} 个词语`);
         }
@@ -695,27 +451,24 @@
             }
 
             state.currentIndex = 0;
-            state.currentRepeat = 0; // 当前词已读次数
+            state.currentRepeat = 0;
             state.isPlaying = true;
             showPage('playing');
             playCurrentWord();
         }
 
-        // 朗读当前词语（每次读一遍，等待间隔，再读下一遍）
+        // 朗读当前词语
         function playCurrentWord() {
             const word = state.words[state.currentIndex];
             document.getElementById('currentWord').textContent = word;
-            document.getElementById('markWord').textContent = word;
             document.getElementById('progress').textContent =
                 `第 ${state.currentIndex + 1} / ${state.words.length} 个词语（第 ${state.currentRepeat + 1}/${state.repeat} 次）`;
 
-            // 读一遍
             speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(word);
             utterance.lang = 'zh-CN';
             utterance.rate = 0.8;
 
-            // 等语音读完后开始倒计时
             utterance.onend = function() {
                 startCountdown();
             };
@@ -724,7 +477,6 @@
         }
 
         function startCountdown() {
-            console.log('开始倒计时', state.interval, '秒');
             document.getElementById('countdownBar').style.display = 'block';
             const fill = document.getElementById('countdownFill');
             fill.style.width = '100%';
@@ -735,22 +487,17 @@
             if (state.countdownTimer) clearInterval(state.countdownTimer);
 
             state.countdownTimer = setInterval(() => {
-                console.log('倒计时剩余', remaining, '秒');
                 remaining--;
                 fill.style.width = `${(remaining / total) * 100}%`;
 
                 if (remaining <= 0) {
                     clearInterval(state.countdownTimer);
                     document.getElementById('countdownBar').style.display = 'none';
-                    console.log('倒计时结束');
 
-                    // 检查是否还要继续读当前词
                     state.currentRepeat++;
                     if (state.currentRepeat < state.repeat) {
-                        // 继续读当前词的下一遍
                         playCurrentWord();
                     } else {
-                        // 当前词读完了，进入下一个词
                         nextWord();
                     }
                 }
@@ -762,6 +509,7 @@
                 clearInterval(state.countdownTimer);
                 document.getElementById('countdownBar').style.display = 'none';
             }
+            state.currentRepeat = 0;
             playCurrentWord();
         }
 
@@ -771,7 +519,7 @@
             }
 
             state.currentIndex++;
-            state.currentRepeat = 0; // 重置当前词已读次数
+            state.currentRepeat = 0;
 
             if (state.currentIndex >= state.words.length) {
                 completeDictation();
@@ -800,64 +548,6 @@
             document.getElementById('completeStats').textContent =
                 `共听写 ${state.words.length} 个词语`;
             showPage('complete');
-        }
-
-        // 标记为错误
-        function markAsWrong() {
-            const word = state.words[state.currentIndex];
-            const existing = state.wrongWords.find(w => w.text === word);
-
-            if (!existing) {
-                state.wrongWords.push({
-                    text: word,
-                    date: new Date().toLocaleString('zh-CN')
-                });
-                localStorage.setItem('wrongWords', JSON.stringify(state.wrongWords));
-                renderWrongWords();
-                showToast('已加入错词本');
-            } else {
-                showToast('该词已在错词本中');
-            }
-        }
-
-        // 错词本
-        function renderWrongWords() {
-            const container = document.getElementById('wrongWordsList');
-            const clearBtn = document.getElementById('clearWrongBtn');
-
-            if (state.wrongWords.length === 0) {
-                container.innerHTML = '<div class="empty-state">还没有错词记录</div>';
-                clearBtn.disabled = true;
-                return;
-            }
-
-            clearBtn.disabled = false;
-            container.innerHTML = state.wrongWords.map((item, i) => `
-                <div class="wrong-word-item">
-                    <div>
-                        <div class="wrong-word-text">${item.text}</div>
-                        <div class="wrong-word-date">${item.date}</div>
-                    </div>
-                    <button class="btn btn-secondary" style="padding: 6px 12px;" onclick="removeWrongWord(${i})">
-                        删除
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        function removeWrongWord(index) {
-            state.wrongWords.splice(index, 1);
-            localStorage.setItem('wrongWords', JSON.stringify(state.wrongWords));
-            renderWrongWords();
-        }
-
-        function clearWrongWords() {
-            if (confirm('确定要清空错词本吗？')) {
-                state.wrongWords = [];
-                localStorage.setItem('wrongWords', JSON.stringify([]));
-                renderWrongWords();
-                showToast('错词本已清空');
-            }
         }
 
         // 提示
