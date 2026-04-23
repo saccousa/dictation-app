@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>语文听写小助手</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-green: #34C759;
+            --ios-orange: #FF9500;
+            --ios-red: #FF3B30;
+            --ios-gray: #8E8E93;
+            --ios-light-gray: #F2F2F7;
+            --ios-separator: #C6C6C8;
+            --ios-label: #6C6C70;
+            --ios-card-bg: #FFFFFF;
+            --ios-bg: #F2F2F7;
+            --ios-text: #000000;
+            --ios-secondary-text: #3C3C43;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro SC', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+            background: var(--ios-bg);
+            min-height: 100vh;
+            padding: 20px 16px;
+            padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--ios-text);
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .card {
+            background: var(--ios-card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ios-label);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 20px 20px 12px;
+        }
+
+        .card-content {
+            padding: 0 20px 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            resize: none;
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            background: #E5E5EA;
+        }
+
+        textarea::placeholder {
+            color: var(--ios-gray);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn:active {
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--ios-blue);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--ios-light-gray);
+            color: var(--ios-blue);
+        }
+
+        .btn-success {
+            background: var(--ios-green);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--ios-orange);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--ios-red);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-large {
+            padding: 16px 24px;
+            font-size: 18px;
+            border-radius: 14px;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 0.5px solid var(--ios-separator);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            font-size: 17px;
+            color: var(--ios-text);
+        }
+
+        .settings-options {
+            display: flex;
+            gap: 6px;
+        }
+
+        .option-btn {
+            padding: 8px 14px;
+            border: 1px solid var(--ios-separator);
+            border-radius: 8px;
+            background: white;
+            font-size: 15px;
+            color: var(--ios-text);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .option-btn.active {
+            background: var(--ios-blue);
+            border-color: var(--ios-blue);
+            color: white;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .preview-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            background: var(--ios-light-gray);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 15px;
+            color: var(--ios-text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            color: var(--ios-gray);
+            font-weight: 600;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .tag-remove:hover {
+            color: var(--ios-red);
+        }
+
+        .playing-card {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .current-word {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--ios-blue);
+            margin-bottom: 12px;
+            min-height: 56px;
+            letter-spacing: -1px;
+        }
+
+        .progress {
+            color: var(--ios-label);
+            font-size: 15px;
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .countdown-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--ios-light-gray);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        .countdown-fill {
+            height: 100%;
+            background: var(--ios-blue);
+            transition: width 0.3s linear;
+        }
+
+        .wrong-words-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .wrong-word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 0.5px solid var(--ios-separator);
+        }
+
+        .wrong-word-item:last-child {
+            border-bottom: none;
+        }
+
+        .wrong-word-text {
+            font-size: 17px;
+            color: var(--ios-text);
+            font-weight: 500;
+        }
+
+        .wrong-word-date {
+            font-size: 13px;
+            color: var(--ios-label);
+            margin-top: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--ios-gray);
+            font-size: 15px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(118, 118, 128, 0.12);
+            border-radius: 10px;
+            padding: 3px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 12px;
+            color: var(--ios-label);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: var(--ios-text);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: calc(env(safe-area-inset-bottom) + 30px);
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(44, 44, 46, 0.95);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        .photo-preview {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .word-list-item {
+            padding: 16px 0;
+            border-bottom: 0.5px solid var(--ios-separator);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .word-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .separator {
+            height: 0.5px;
+            background: var(--ios-separator);
+            margin: 0 20px;
+        }
+
+        /* Large title style */
+        .large-title {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: 0.37px;
+            padding-bottom: 8px;
+        }
+
+        /* iOS list style */
+        .ios-list {
+            background: var(--ios-card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .ios-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--ios-card-bg);
+        }
+
+        .ios-list-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            right: 0;
+            height: 0.5px;
+            background: var(--ios-separator);
+        }
+
+        .ios-list-item-content {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="large-title">听写小助手</h1>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-page="setup">准备听写</div>
+            <div class="nav-tab" data-page="wrong-words">错词本</div>
+        </div>
+
+        <!-- 准备页面 -->
+        <div class="page active" id="setup-page">
+            <div class="card">
+                <div class="card-title">听写内容</div>
+                <div class="card-content">
+                    <textarea id="wordsInput" placeholder="请输入词语，用空格、逗号或换行分隔"></textarea>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="document.getElementById('photoInput').click()">
+                            拍照导入
+                        </button>
+                        <button class="btn btn-secondary" onclick="parseWords()">
+                            确认输入
+                        </button>
+                    </div>
+                    <input type="file" id="photoInput" class="hidden-file-input" accept="image/*" capture="camera" onchange="handlePhotoUpload(event, 'words')">
+                    <div class="preview-tags" id="wordsPreview"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">听写设置</div>
+                <div class="card-content">
+                    <div class="settings-row">
+                        <span class="settings-label">词语间隔</span>
+                        <div class="settings-options">
+                            <button class="option-btn" data-setting="interval" data-value="5">5 秒</button>
+                            <button class="option-btn active" data-setting="interval" data-value="10">10 秒</button>
+                            <button class="option-btn" data-setting="interval" data-value="15">15 秒</button>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <span class="settings-label">读词次数</span>
+                        <div class="settings-options">
+                            <button class="option-btn active" data-setting="repeat" data-value="1">1 次</button>
+                            <button class="option-btn" data-setting="repeat" data-value="2">2 次</button>
+                            <button class="option-btn" data-setting="repeat" data-value="3">3 次</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-large btn-block" onclick="startDictation()" id="startBtn">
+                开始听写
+            </button>
+        </div>
+
+        <!-- 听写中页面 -->
+        <div class="page" id="playing-page">
+            <div class="card playing-card">
+                <div class="current-word" id="currentWord">准备开始</div>
+                <div class="progress" id="progress">共 0 个词语</div>
+                <button class="btn btn-primary btn-block" onclick="repeatCurrentWord()" id="repeatBtn">
+                    再读一遍
+                </button>
+                <button class="btn btn-secondary btn-block" onclick="nextWord()" style="margin-top: 12px;">
+                    下一个
+                </button>
+                <button class="btn btn-danger btn-block" onclick="stopDictation()" style="margin-top: 12px;">
+                    结束听写
+                </button>
+                <div class="countdown-bar" id="countdownBar" style="display: none;">
+                    <div class="countdown-fill" id="countdownFill"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">标记错误</div>
+                <div class="card-content">
+                    <p style="color: var(--ios-label); font-size: 15px; margin-bottom: 12px;">
+                        当前词语：<span id="markWord" style="color: var(--ios-blue); font-weight: 600;"></span>
+                    </p>
+                    <button class="btn btn-warning btn-block" onclick="markAsWrong()">
+                        这个词写错了
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 错词本页面 -->
+        <div class="page" id="wrong-words-page">
+            <div class="card">
+                <div class="card-title">拍照检查</div>
+                <div class="card-content">
+                    <button class="btn btn-secondary btn-block" onclick="document.getElementById('wrongWordsPhotoInput').click()">
+                        拍摄订正内容
+                    </button>
+                    <input type="file" id="wrongWordsPhotoInput" class="hidden-file-input" accept="image/*" capture="camera" onchange="handlePhotoUpload(event, 'check')">
+                    <div id="checkPhotoPreview"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">错词记录</div>
+                <div class="card-content">
+                    <div class="wrong-words-list" id="wrongWordsList">
+                        <div class="empty-state">还没有错词记录</div>
+                    </div>
+                    <button class="btn btn-danger btn-block" onclick="clearWrongWords()" style="width: 100%; margin-top: 16px;" id="clearWrongBtn" disabled>
+                        清空错词本
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 完成页面 -->
+        <div class="page" id="complete-page">
+            <div class="card playing-card">
+                <div style="font-size: 80px; margin-bottom: 16px;">🎉</div>
+                <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--ios-text);">听写完成</h2>
+                <p style="color: var(--ios-label); font-size: 17px; margin-bottom: 24px;" id="completeStats"></p>
+                <button class="btn btn-primary btn-large btn-block" onclick="showPage('setup')">
+                    再来一次
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 状态管理
+        let state = {
+            words: [],
+            currentIndex: 0,
+            currentRepeat: 0,
+            interval: 10,
+            repeat: 1,
+            wrongWords: JSON.parse(localStorage.getItem('wrongWords') || '[]'),
+            isPlaying: false,
+            countdownTimer: null,
+            checkPhotos: []
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initSettings();
+            renderWrongWords();
+            initNavigation();
+        });
+
+        // 导航
+        function initNavigation() {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const page = tab.dataset.page;
+                    showPage(page);
+                });
+            });
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(pageName + '-page').classList.add('active');
+
+            const tab = document.querySelector(`[data-page="${pageName}"]`);
+            if (tab) tab.classList.add('active');
+
+            if (pageName === 'setup') {
+                state.isPlaying = false;
+            }
+        }
+
+        // 设置
+        function initSettings() {
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const setting = btn.dataset.setting;
+                    const value = parseInt(btn.dataset.value);
+
+                    document.querySelectorAll(`[data-setting="${setting}"]`).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    state[setting] = value;
+                });
+            });
+        }
+
+        // 拍照上传处理
+        function handlePhotoUpload(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (type === 'words') {
+                    // 这里可以集成 OCR 识别，目前仅显示预览
+                    showToast('照片已选择，请手动输入识别出的词语（后续可集成 OCR）');
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'camera-preview';
+                    document.getElementById('wordsPreview').innerHTML = '';
+                    document.getElementById('wordsPreview').appendChild(img);
+                } else if (type === 'check') {
+                    state.checkPhotos.push(e.target.result);
+                    renderCheckPhotos();
+                    showToast('照片已保存');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderCheckPhotos() {
+            const container = document.getElementById('checkPhotoPreview');
+            container.innerHTML = state.checkPhotos.map(src =>
+                `<img src="${src}" class="photo-preview">`
+            ).join('');
+        }
+
+        // 解析词语
+        function parseWords() {
+            const input = document.getElementById('wordsInput').value;
+            // 支持空格、逗号、顿号、换行分隔
+            const words = input.replace(/,/g, ',').replace(/\u3001/g, ',').split(/[,\n\r\s]+/).filter(w => w.trim());
+
+            if (words.length === 0) {
+                showToast('请输入至少一个词语');
+                return;
+            }
+
+            state.words = [...new Set(words)]; // 去重
+            renderPreview();
+            showToast(`已解析 ${state.words.length} 个词语`);
+        }
+
+        function renderPreview() {
+            const container = document.getElementById('wordsPreview');
+            if (state.words.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = state.words.map((word, i) => `
+                <span class="tag">
+                    ${word}
+                    <span class="tag-remove" onclick="removeWord(${i})">×</span>
+                </span>
+            `).join('');
+        }
+
+        function removeWord(index) {
+            state.words.splice(index, 1);
+            renderPreview();
+        }
+
+        // 开始听写
+        function startDictation() {
+            if (state.words.length === 0) {
+                parseWords();
+            }
+
+            if (state.words.length === 0) {
+                showToast('请先输入词语');
+                return;
+            }
+
+            state.currentIndex = 0;
+            state.currentRepeat = 0; // 当前词已读次数
+            state.isPlaying = true;
+            showPage('playing');
+            playCurrentWord();
+        }
+
+        // 朗读当前词语（每次读一遍，等待间隔，再读下一遍）
+        function playCurrentWord() {
+            const word = state.words[state.currentIndex];
+            document.getElementById('currentWord').textContent = word;
+            document.getElementById('markWord').textContent = word;
+            document.getElementById('progress').textContent =
+                `第 ${state.currentIndex + 1} / ${state.words.length} 个词语（第 ${state.currentRepeat + 1}/${state.repeat} 次）`;
+
+            // 读一遍
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 0.8;
+
+            // 等语音读完后开始倒计时
+            utterance.onend = function() {
+                startCountdown();
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function startCountdown() {
+            console.log('开始倒计时', state.interval, '秒');
+            document.getElementById('countdownBar').style.display = 'block';
+            const fill = document.getElementById('countdownFill');
+            fill.style.width = '100%';
+
+            let remaining = state.interval;
+            const total = state.interval;
+
+            if (state.countdownTimer) clearInterval(state.countdownTimer);
+
+            state.countdownTimer = setInterval(() => {
+                console.log('倒计时剩余', remaining, '秒');
+                remaining--;
+                fill.style.width = `${(remaining / total) * 100}%`;
+
+                if (remaining <= 0) {
+                    clearInterval(state.countdownTimer);
+                    document.getElementById('countdownBar').style.display = 'none';
+                    console.log('倒计时结束');
+
+                    // 检查是否还要继续读当前词
+                    state.currentRepeat++;
+                    if (state.currentRepeat < state.repeat) {
+                        // 继续读当前词的下一遍
+                        playCurrentWord();
+                    } else {
+                        // 当前词读完了，进入下一个词
+                        nextWord();
+                    }
+                }
+            }, 1000);
+        }
+
+        function repeatCurrentWord() {
+            if (state.countdownTimer) {
+                clearInterval(state.countdownTimer);
+                document.getElementById('countdownBar').style.display = 'none';
+            }
+            playCurrentWord();
+        }
+
+        function nextWord() {
+            if (state.countdownTimer) {
+                clearInterval(state.countdownTimer);
+            }
+
+            state.currentIndex++;
+            state.currentRepeat = 0; // 重置当前词已读次数
+
+            if (state.currentIndex >= state.words.length) {
+                completeDictation();
+            } else {
+                playCurrentWord();
+            }
+        }
+
+        function stopDictation() {
+            if (state.countdownTimer) {
+                clearInterval(state.countdownTimer);
+            }
+            speechSynthesis.cancel();
+            state.isPlaying = false;
+            showPage('setup');
+            showToast('听写已停止');
+        }
+
+        function completeDictation() {
+            if (state.countdownTimer) {
+                clearInterval(state.countdownTimer);
+            }
+            speechSynthesis.cancel();
+            state.isPlaying = false;
+
+            document.getElementById('completeStats').textContent =
+                `共听写 ${state.words.length} 个词语`;
+            showPage('complete');
+        }
+
+        // 标记为错误
+        function markAsWrong() {
+            const word = state.words[state.currentIndex];
+            const existing = state.wrongWords.find(w => w.text === word);
+
+            if (!existing) {
+                state.wrongWords.push({
+                    text: word,
+                    date: new Date().toLocaleString('zh-CN')
+                });
+                localStorage.setItem('wrongWords', JSON.stringify(state.wrongWords));
+                renderWrongWords();
+                showToast('已加入错词本');
+            } else {
+                showToast('该词已在错词本中');
+            }
+        }
+
+        // 错词本
+        function renderWrongWords() {
+            const container = document.getElementById('wrongWordsList');
+            const clearBtn = document.getElementById('clearWrongBtn');
+
+            if (state.wrongWords.length === 0) {
+                container.innerHTML = '<div class="empty-state">还没有错词记录</div>';
+                clearBtn.disabled = true;
+                return;
+            }
+
+            clearBtn.disabled = false;
+            container.innerHTML = state.wrongWords.map((item, i) => `
+                <div class="wrong-word-item">
+                    <div>
+                        <div class="wrong-word-text">${item.text}</div>
+                        <div class="wrong-word-date">${item.date}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 6px 12px;" onclick="removeWrongWord(${i})">
+                        删除
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeWrongWord(index) {
+            state.wrongWords.splice(index, 1);
+            localStorage.setItem('wrongWords', JSON.stringify(state.wrongWords));
+            renderWrongWords();
+        }
+
+        function clearWrongWords() {
+            if (confirm('确定要清空错词本吗？')) {
+                state.wrongWords = [];
+                localStorage.setItem('wrongWords', JSON.stringify([]));
+                renderWrongWords();
+                showToast('错词本已清空');
+            }
+        }
+
+        // 提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+</html>
